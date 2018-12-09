@@ -37,7 +37,7 @@ Look::Initialise(const Font &map_font)
 
 void
 Look::InitialiseConfigured(const UISettings &settings,
-                           const Font &map_font, const Font &map_bold_font,
+                           const Font &map_font, const Font &map_bold_font, const Font &map_overlay_value_font,
                            unsigned infobox_width)
 {
   dialog.Initialise();
@@ -58,7 +58,7 @@ Look::InitialiseConfigured(const UISettings &settings,
   thermal_assistant_gauge.Initialise(true, settings.info_boxes.inverse);
   final_glide_bar.Initialise(map_bold_font);
   vario_bar.Initialise(map_bold_font);
-  map.Initialise(settings.map, map_font, map_bold_font);
+  map.Initialise123(settings.map, map_font, map_bold_font, map_overlay_value_font);
   icon.Initialise();
   circling_percent.Initialise();
 }

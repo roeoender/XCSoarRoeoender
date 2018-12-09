@@ -173,7 +173,8 @@ InfoBoxContentNextWaypoint::GetDialogContent()
 void
 UpdateInfoBoxNextDistance(InfoBoxData &data)
 {
-  const auto way_point = protected_task_manager != nullptr
+//  const ProtectedTaskManager *ptask = protected_task_manager;
+  const WaypointPtr way_point = protected_task_manager != nullptr
     ? protected_task_manager->GetActiveWaypoint()
     : nullptr;
 

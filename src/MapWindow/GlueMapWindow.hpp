@@ -221,6 +221,7 @@ private:
   void DrawMapScale(Canvas &canvas, const PixelRect &rc,
                     const MapWindowProjection &projection) const;
   void DrawFlightMode(Canvas &canvas, const PixelRect &rc) const;
+  void DrawValuesOverlay(Canvas &canvas, const PixelRect &rc) const;
   void DrawGPSStatus(Canvas &canvas, const PixelRect &rc,
                      const NMEAInfo &info) const;
   void DrawCrossHairs(Canvas &canvas) const;

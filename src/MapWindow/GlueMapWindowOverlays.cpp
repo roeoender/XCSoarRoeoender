@@ -44,6 +44,8 @@ Copyright_License {
 #include "Renderer/MapScaleRenderer.hpp"
 
 #include <stdio.h>
+// jarek
+#include "Engine/Waypoint/Waypoint.hpp"
 
 void
 GlueMapWindow::DrawGesture(Canvas &canvas) const
@@ -142,6 +144,50 @@ GlueMapWindow::DrawPanInfo(Canvas &canvas) const
 
     start = newline + 1;
   }
+}
+
+void
+GlueMapWindow::DrawValuesOverlay(Canvas &canvas, const PixelRect &rc) const
+{ // jarek
+  TCHAR valChar[50];
+  StaticString<80> buffer;
+  buffer.clear();
+
+  auto bv = Basic().ground_speed;
+  FormatUserSpeed(bv, valChar, false, false);
+  buffer += valChar;
+  buffer += _T(" G");
+  auto hGps = Basic().gps_altitude_available ? (int)Basic().gps_altitude : 0;
+  auto hBaro = Basic().pressure_altitude_available ?
+    (int)Basic().pressure_altitude :
+    Basic().baro_altitude_available ? (int)Basic().baro_altitude : 0;
+  FormatUserAltitude(hGps, valChar, false);
+  buffer += valChar;
+  buffer += _T(" P");
+  FormatUserAltitude(hBaro, valChar, false);
+  buffer += valChar;
+  
+  if (task != nullptr) {
+    const ProtectedTaskManager *ptask = task;
+////    ProtectedTaskManager::Lease task_manager(*task);
+//// TODO niewiem czy ok    ProtectedTaskManager::ExclusiveLease protected_task_manager(*task);
+    const WaypointPtr way_point = ptask->GetActiveWaypoint();
+    if (way_point != nullptr) {
+      buffer += _T(" ");
+      const TCHAR *value = way_point->name.c_str();
+      buffer += value;
+    }
+  }
+  
+  PixelPoint p(rc.left + Layout::FastScale(2),
+               rc.bottom - Layout::FastScale(50));
+  TextInBoxMode mode;
+  mode.shape = LabelShape::ROUNDED_BLACK;
+
+  const Font &font = *look.overlay.overlay_value_font;
+  canvas.Select(font);
+  TextInBox(canvas, buffer, p.x, p.y, mode, rc, nullptr);
+
 }
 
 void
@@ -301,7 +347,7 @@ GlueMapWindow::DrawMapScale(Canvas &canvas, const PixelRect &rc,
   if (Basic().gps.replay)
     buffer += _T("REPLAY ");
   else if (Basic().gps.simulator) {
-    buffer += _("Simulator");
+    buffer += _("SIM");
     buffer += _T(" ");
   }
 

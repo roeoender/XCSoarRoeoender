@@ -34,10 +34,11 @@ struct OverlayLook {
   MaskedIcon map_scale_right_icon;
 
   const Font *overlay_font;
+  const Font *overlay_value_font;
 
   Pen crosshair_pen;
 
-  void Initialise(const Font &font, const Font &bold_font);
+  void Initialise(const Font &font, const Font &bold_font, const Font &overlay_value_font);
 };
 
 #endif

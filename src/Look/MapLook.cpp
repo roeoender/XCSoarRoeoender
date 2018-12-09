@@ -28,8 +28,8 @@ Copyright_License {
 #include "Colors.hpp"
 
 void
-MapLook::Initialise(const MapSettings &settings,
-                    const Font &font, const Font &bold_font)
+MapLook::Initialise123(const MapSettings &settings,
+                    const Font &font, const Font &bold_font, const Font &overlay_value_font)
 {
   const uint8_t alpha = ALPHA_OVERLAY;
 
@@ -72,7 +72,7 @@ MapLook::Initialise(const MapSettings &settings,
   reach_working_pen.Create(Pen::DASH1, Layout::ScalePenWidth(1), clrBlupia);
   reach_working_pen_thick.Create(Pen::DASH1, Layout::ScalePenWidth(2), clrBlupia);
 
-  track_line_pen.Create(3, COLOR_GRAY);
+  track_line_pen.Create(Layout::ScalePenWidth(3) + 1, COLOR_GRAY);
 
   contest_pens[0].Create(Layout::ScalePenWidth(1) + 2, COLOR_RED);
   contest_pens[1].Create(Layout::ScalePenWidth(1) + 1, COLOR_ORANGE);
@@ -95,5 +95,5 @@ MapLook::Initialise(const MapSettings &settings,
   topography.Initialise();
   airspace.Initialise(settings.airspace, topography.important_label_font);
 
-  overlay.Initialise(font, bold_font);
+  overlay.Initialise(font, bold_font, overlay_value_font);
 }
