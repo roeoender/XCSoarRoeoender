@@ -3,6 +3,8 @@ XCSoar
 .. image:: https://circleci.com/gh/XCSoar/XCSoar.svg?style=svg
     :target: https://circleci.com/gh/XCSoar/XCSoar
 
+ATTENTION THIS IS AN EXPERIMENTAL FORK.
+
 XCSoar is a tactical glide computer for Android, Linux, Mac OS X,
 and Windows.
 
