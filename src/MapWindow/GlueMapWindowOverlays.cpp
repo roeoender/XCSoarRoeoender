@@ -1,5 +1,4 @@
-/*
-Copyright_License {
+/* Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
   Copyright (C) 2000-2016 The XCSoar Project
@@ -44,8 +43,17 @@ Copyright_License {
 #include "Renderer/MapScaleRenderer.hpp"
 
 #include <stdio.h>
+
 // jarek
-#include "Engine/Waypoint/Waypoint.hpp"
+#include "Engine/Waypoint/Waypoints.hpp"
+#include "Engine/GlideSolvers/MacCready.hpp"
+#include "Task/RoutePlannerGlue.hpp"
+#include "Engine/Route/RoutePlanner.hpp"
+#include "Engine/GlideSolvers/GlideState.hpp"
+#include "Interface.hpp"
+#include "MainWindow.hpp"
+#include "Units/Units.hpp"
+#include "Formatter/AngleFormatter.hpp"
 
 void
 GlueMapWindow::DrawGesture(Canvas &canvas) const
@@ -146,46 +154,144 @@ GlueMapWindow::DrawPanInfo(Canvas &canvas) const
   }
 }
 
+// bazje na FormatLabel i CalculateReachabilityDirect
+double
+GlueMapWindow::CalculateHomeArrival(
+  const WaypointPtr &home_waypoint,
+  const PolarSettings &polar_settings,
+  const TaskBehaviour &task_behaviour) const {
+  if (!Basic().location_available || !Basic().NavAltitudeAvailable()) {
+    return 0.0;
+  }
+  const auto elevation = home_waypoint->elevation + task_behaviour.safety_height_arrival;
+
+  const GlidePolar &glide_polar = task_behaviour.route_planner.reach_polar_mode == RoutePlannerConfig::Polar::TASK
+  ? polar_settings.glide_polar_task
+  : Calculated().glide_polar_safety;
+  
+  const MacCready mac_cready(task_behaviour.glide, glide_polar);
+  const SpeedVector &wind = Calculated().GetWindOrZero();
+  const GlideState state(GeoVector(Basic().location, home_waypoint->location),
+    elevation, Basic().nav_altitude, wind);
+  
+  const GlideResult result = mac_cready.SolveStraight(state);
+  if (!result.IsOk()) {
+    return 0.0;
+  }
+  return result.pure_glide_altitude_difference;
+}
+
+
 void
 GlueMapWindow::DrawValuesOverlay(Canvas &canvas, const PixelRect &rc) const
-{ // jarek
+{
+ // home arrival
+ const ComputerSettings &settings_computer = GetComputerSettings();
+ const TaskBehaviour &task_behaviour = settings_computer.task;
+
+ // jarek
   TCHAR valChar[50];
   StaticString<80> buffer;
   buffer.clear();
 
-  auto bv = Basic().ground_speed;
-  FormatUserSpeed(bv, valChar, false, false);
-  buffer += valChar;
-  buffer += _T(" G");
-  auto hGps = Basic().gps_altitude_available ? (int)Basic().gps_altitude : 0;
-  auto hBaro = Basic().pressure_altitude_available ?
-    (int)Basic().pressure_altitude :
-    Basic().baro_altitude_available ? (int)Basic().baro_altitude : 0;
-  FormatUserAltitude(hGps, valChar, false);
-  buffer += valChar;
-  buffer += _T(" P");
-  FormatUserAltitude(hBaro, valChar, false);
-  buffer += valChar;
-  
-  if (task != nullptr) {
-    const ProtectedTaskManager *ptask = task;
-////    ProtectedTaskManager::Lease task_manager(*task);
-//// TODO niewiem czy ok    ProtectedTaskManager::ExclusiveLease protected_task_manager(*task);
-    const WaypointPtr way_point = ptask->GetActiveWaypoint();
-    if (way_point != nullptr) {
-      buffer += _T(" ");
-      const TCHAR *value = way_point->name.c_str();
-      buffer += value;
+  if (terrain != nullptr) {
+    auto elevation = terrain->GetTerrainHeight(Basic().location);
+    if (!elevation.IsSpecial()) {
+      FormatUserAltitude(elevation.GetValue(), valChar, false);
+      buffer += valChar;
+      buffer += _T("|");
     }
   }
   
-  PixelPoint p(rc.left + Layout::FastScale(2),
-               rc.bottom - Layout::FastScale(50));
+  auto hAgl = Calculated().altitude_agl;
+  FormatUserAltitude(hAgl, valChar, false);
+  buffer += valChar;
+
+  buffer += _T("|");
+
+  auto hGps = Basic().gps_altitude_available ? (int)Basic().gps_altitude : 0;
+  FormatUserAltitude(hGps, valChar, false);
+  buffer += valChar;
+
+  buffer += _T(" *");
+
+  auto bv = Basic().ground_speed;
+  FormatUserSpeed(bv, valChar, false, false);
+  buffer += valChar;
+
+  PixelPoint p(rc.left + Layout::FastScale(40),
+               rc.bottom - Layout::FastScale(40));
   TextInBoxMode mode;
   mode.shape = LabelShape::ROUNDED_BLACK;
 
   const Font &font = *look.overlay.overlay_value_font;
   canvas.Select(font);
+  TextInBox(canvas, buffer, p.x, p.y, mode, rc, nullptr);
+
+
+  buffer.clear();
+
+  if (task != nullptr) {
+    const WaypointPtr way_point = task->GetActiveWaypoint();
+    if (way_point != nullptr) {
+      buffer += _T(" ^");
+      const TCHAR *value = way_point->name.c_str();
+      buffer.append(value,5);
+      buffer += _T(":");
+      // dystans
+      const TaskStats &task_stats = Calculated().task_stats;
+      const GeoVector &vector_remaining = task_stats.current_leg.vector_remaining;
+      if (task_stats.task_valid && vector_remaining.IsValid()) {
+        FormatUserDistanceSmart(vector_remaining.distance, valChar, false);
+        buffer += valChar;
+        if (Basic().track_available) {
+          buffer += _T(":");
+          Angle bd = vector_remaining.bearing - Basic().track;
+          FormatAngleDelta(valChar,10, bd);
+          buffer += valChar;
+        }
+      }
+    }
+  }
+  auto waypoints = CommonInterface::main_window->GetMap()->waypoints;
+  if (waypoints != nullptr && waypoints->GetHome() != nullptr) {
+    auto home_waypoint = waypoints->GetHome();
+    if (home_waypoint != nullptr) {
+
+
+      const TCHAR *value = home_waypoint->name.c_str();
+      buffer += _T(" @");
+      buffer.append(value,5);
+      // wysokosc dolotu
+      buffer += _T(":");
+      double home_arrival_height = CalculateHomeArrival(home_waypoint, settings_computer.polar, task_behaviour);
+      FormatUserAltitude((int)Units::ToUserAltitude(home_arrival_height), valChar, false);
+      buffer += valChar;
+      buffer += _T("|");
+      // dystans i kierunek
+      if (Calculated().common_stats.vector_home.IsValid()) {
+        double distance_home = Calculated().common_stats.vector_home.distance;
+        FormatUserDistanceSmart(distance_home, valChar, false);
+        buffer += valChar;
+        buffer += _T(":");
+        if (Basic().track_available) {
+          Angle angle_home = Calculated().common_stats.vector_home.bearing - Basic().track;
+          FormatAngleDelta(valChar,10, angle_home);
+          buffer += valChar;
+        }
+      }
+    }
+  }
+
+
+  
+
+  p.x = rc.left + Layout::FastScale(40),
+  p.y = rc.top + Layout::FastScale(5);
+  //const Font &font = *look.overlay.map_bold;
+  const Font &font2 = *look.overlay.overlay_font;
+  mode.shape = LabelShape::OUTLINED;
+  canvas.Select(font2);
   TextInBox(canvas, buffer, p.x, p.y, mode, rc, nullptr);
 
 }
