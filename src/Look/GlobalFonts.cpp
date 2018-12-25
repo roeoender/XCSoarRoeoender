@@ -29,14 +29,17 @@ Copyright_License {
 Font Fonts::map;
 /// menu buttons, waypoint selection, messages, etc.
 Font Fonts::map_bold;
+/// JAREK font wyswietlania
+Font Fonts::map_overlay_value;
 
 bool
 Fonts::Load(const FontSettings &settings)
 {
   map.Load(settings.map);
   map_bold.Load(settings.map_bold);
+  map_overlay_value.Load(settings.map_overlay_value);
 
-  return map.IsDefined() && map_bold.IsDefined();
+  return map.IsDefined() && map_bold.IsDefined() && map_overlay_value.IsDefined();
 }
 
 void
@@ -44,4 +47,5 @@ Fonts::Deinitialize()
 {
   map.Destroy();
   map_bold.Destroy();
+  map_overlay_value.Destroy();
 }

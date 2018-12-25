@@ -409,7 +409,7 @@ GlueMapWindow::OnPaintBuffer(Canvas &canvas)
 
   MapWindow::OnPaintBuffer(canvas);
 
-  DrawMapScale(canvas, GetClientRect(), render_projection);
+  // JAREK DrawMapScale(canvas, GetClientRect(), render_projection);
   if (IsPanning())
     DrawPanInfo(canvas);
 
@@ -462,6 +462,8 @@ GlueMapWindow::Render(Canvas &canvas, const PixelRect &rc)
     DrawFlightMode(canvas, rc);
     DrawFinalGlide(canvas, rc);
     DrawVario(canvas, rc);
+    DrawMapScale(canvas, rc, render_projection);
+    DrawValuesOverlay(canvas, rc);
     DrawGPSStatus(canvas, rc, Basic());
   }
 }

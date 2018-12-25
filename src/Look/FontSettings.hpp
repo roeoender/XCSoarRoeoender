@@ -29,6 +29,7 @@ Copyright_License {
 struct FontSettings {
   FontDescription map;
   FontDescription map_bold;
+  FontDescription map_overlay_value;
 };
 
 #endif

@@ -35,6 +35,7 @@ namespace Fonts
 {
   extern Font map;
   extern Font map_bold;
+  extern Font map_overlay_value;
 
   bool Load(const FontSettings &settings);
 

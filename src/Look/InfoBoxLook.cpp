@@ -76,7 +76,8 @@ void
 InfoBoxLook::ReinitialiseLayout(unsigned width)
 {
   FontDescription title_font_d(8);
-  AutoSizeFont(title_font_d, width, _T("123456789012345"));
+// JAREK ORG:  AutoSizeFont(title_font_d, width, _T("123456789012345"));
+  AutoSizeFont(title_font_d, width, _T("1234567890"));
   title_font.Load(title_font_d);
 
   FontDescription value_font_d(10, true);

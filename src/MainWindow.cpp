@@ -220,7 +220,7 @@ MainWindow::InitialiseConfigured()
 
   assert(look != nullptr);
   look->InitialiseConfigured(CommonInterface::GetUISettings(),
-                             Fonts::map, Fonts::map_bold,
+                             Fonts::map, Fonts::map_bold, Fonts::map_overlay_value,
                              ib_layout.control_size.cx);
 
   InfoBoxManager::Create(*this, ib_layout, look->info_box);
