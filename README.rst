@@ -1,42 +1,19 @@
-XCSoar
-======
-.. image:: https://circleci.com/gh/XCSoar/XCSoar.svg?style=svg
-    :target: https://circleci.com/gh/XCSoar/XCSoar
+XCSoarRoeoender
+===============
 
 ATTENTION THIS IS AN EXPERIMENTAL FORK.
+Please go to https://github.com/XCSoar for official XCSoar.
 
-XCSoar is a tactical glide computer for Android, Linux, Mac OS X,
-and Windows.
-
-This file is aimed at developers. Developers should read the manual which 
-can be found on the `XCSoar home page <https://xcsoar.org/discover/manual.html>`__.
-
-Users can refer to the Users' Manual which, for the latest release, can be
-downloaded via the `XCSoar home page <https://xcsoar.org/discover/manual.html>`__.
-
-Getting the source
-------------------
-
-The XCSoar source code is managed with `git <http://git-scm.com/>`__.  It
-can be downloaded with the following command::
-
- git clone git://github.com/XCSoar/XCSoar
-
-To update your repository, type::
-
- git pull
-
-For more information, please refer to the git documentation.
-
-
-Compiling from source
----------------------
-
-Please read the current Developers' Manual for detailed build instructions.
-
-Submitting patches
-------------------
-
-Patches may be submitted using the Developers' mail list or GitHub. Refer to
-chapter 3 of the current Developers' Manual for details of how to write and 
-submit patches upstream.
+Aims of this fork:
+- overlay on map with most important values:
+    - height above ground / GPS height
+    - terrain elevation
+    - ground speed, dolphin speed, MacCready setting
+    - vertical distance to nearest airspace
+    - name of nearest vertical airspace
+    - next waypoint, distance, direction
+    - home waypoint, arrival altitude at home, distance , direction
+- overlay values are presented with yellow color
+- larger titles in InfoBoxes
+- thicker crosshair in pan mode
+- thicker turning path indicator
