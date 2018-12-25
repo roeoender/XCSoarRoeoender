@@ -3115,7 +3115,7 @@ msgstr "Strekkfl."
 
 #: src/InfoBoxes/InfoBoxSettings.cpp:81
 #, no-c-format
-msgid "FinalGlide"
+msgid "Final"
 msgstr "MålStrekk"
 
 #: src/InfoBoxes/InfoBoxManager.cpp:208

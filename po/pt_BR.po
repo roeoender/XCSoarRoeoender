@@ -3142,8 +3142,8 @@ msgstr "Planeio"
 
 #: src/InfoBoxes/InfoBoxSettings.cpp:81
 #, no-c-format
-msgid "FinalGlide"
-msgstr "Planeio Final"
+msgid "Final"
+msgstr "Final"
 
 #: src/InfoBoxes/InfoBoxManager.cpp:208
 #: src/Dialogs/Settings/dlgConfigInfoboxes.cpp:263

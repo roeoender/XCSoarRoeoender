@@ -3254,7 +3254,7 @@ msgstr "Crociera"
 
 #: src/InfoBoxes/InfoBoxSettings.cpp:81
 #, no-c-format
-msgid "FinalGlide"
+msgid "Final"
 msgstr "PlanataFinale"
 
 #: src/InfoBoxes/InfoBoxManager.cpp:208

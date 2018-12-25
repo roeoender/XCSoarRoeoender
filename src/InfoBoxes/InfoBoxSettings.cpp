@@ -78,7 +78,7 @@ InfoBoxSettings::SetDefaults()
 
   panels[0].name = N_("Circling");
   panels[1].name = N_("Cruise");
-  panels[2].name = N_("FinalGlide");
+  panels[2].name = N_("Final");
 
   for (unsigned i = PREASSIGNED_PANELS; i < MAX_PANELS; i++)
     panels[i].name.Format(_T("AUX-%u"), i-2);

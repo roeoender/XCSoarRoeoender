@@ -3211,7 +3211,7 @@ msgstr "Перехід"
 
 #: src/InfoBoxes/InfoBoxSettings.cpp:81
 #, no-c-format
-msgid "FinalGlide"
+msgid "Final"
 msgstr "Доліт"
 
 #: src/InfoBoxes/InfoBoxManager.cpp:208

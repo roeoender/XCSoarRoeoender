@@ -3197,8 +3197,8 @@ msgstr "Steken"
 
 #: src/InfoBoxes/InfoBoxSettings.cpp:81
 #, no-c-format
-msgid "FinalGlide"
-msgstr "FinalGlide"
+msgid "Final"
+msgstr "Final"
 
 #: src/InfoBoxes/InfoBoxManager.cpp:208
 #: src/Dialogs/Settings/dlgConfigInfoboxes.cpp:263

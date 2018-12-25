@@ -3153,7 +3153,7 @@ msgstr "Let"
 
 #: src/InfoBoxes/InfoBoxSettings.cpp:81
 #, no-c-format
-msgid "FinalGlide"
+msgid "Final"
 msgstr "Dokluz"
 
 #: src/InfoBoxes/InfoBoxManager.cpp:208

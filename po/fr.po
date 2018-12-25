@@ -3243,7 +3243,7 @@ msgstr "Transition"
 
 #: src/InfoBoxes/InfoBoxSettings.cpp:81
 #, no-c-format
-msgid "FinalGlide"
+msgid "Final"
 msgstr "Arrivée"
 
 #: src/InfoBoxes/InfoBoxManager.cpp:208

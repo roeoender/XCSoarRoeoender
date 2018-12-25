@@ -3223,7 +3223,7 @@ msgstr "Vorflug"
 
 #: src/InfoBoxes/InfoBoxSettings.cpp:81
 #, no-c-format
-msgid "FinalGlide"
+msgid "Final"
 msgstr "Endanflug"
 
 #: src/InfoBoxes/InfoBoxManager.cpp:208

@@ -3200,7 +3200,7 @@ msgstr "Transición"
 
 #: src/InfoBoxes/InfoBoxSettings.cpp:81
 #, no-c-format
-msgid "FinalGlide"
+msgid "Final"
 msgstr "Planeo final"
 
 #: src/InfoBoxes/InfoBoxManager.cpp:208

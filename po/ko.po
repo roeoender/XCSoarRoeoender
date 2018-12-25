@@ -3147,7 +3147,7 @@ msgstr "순항"
 
 #: src/InfoBoxes/InfoBoxSettings.cpp:81
 #, no-c-format
-msgid "FinalGlide"
+msgid "Final"
 msgstr "최종포인트(골포인트)"
 
 #: src/InfoBoxes/InfoBoxManager.cpp:208

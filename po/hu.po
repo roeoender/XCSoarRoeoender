@@ -3173,7 +3173,7 @@ msgstr "Siklás"
 
 #: src/InfoBoxes/InfoBoxSettings.cpp:81
 #, no-c-format
-msgid "FinalGlide"
+msgid "Final"
 msgstr "Végsiklás"
 
 #: src/InfoBoxes/InfoBoxManager.cpp:208

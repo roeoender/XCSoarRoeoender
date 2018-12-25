@@ -2988,7 +2988,7 @@ msgstr "巡航"
 
 #: src/InfoBoxes/InfoBoxSettings.cpp:81
 #, no-c-format
-msgid "FinalGlide"
+msgid "Final"
 msgstr "最终滑翔"
 
 #: src/InfoBoxes/InfoBoxManager.cpp:208
