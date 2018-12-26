@@ -134,6 +134,10 @@ public:
     pen = Pen(1, COLOR_BLACK);
   }
 
+  void SelectYellowPen() {
+    pen = Pen(1, COLOR_YELLOW);
+  }
+
   void SelectHollowBrush() {
     brush.Destroy();
   }
