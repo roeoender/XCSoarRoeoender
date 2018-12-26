@@ -74,18 +74,37 @@ TextInBoxMoveInView(PixelRect &rc, const PixelRect &map_rc)
 static void
 RenderShadowedText(Canvas &canvas, const TCHAR *text,
                    int x, int y,
-                   bool inverted)
+                   int scheme) // 0 - false, 1 - true, 2 yellow
 {
   canvas.SetBackgroundTransparent();
-
-  canvas.SetTextColor(inverted ? COLOR_BLACK : COLOR_WHITE);
+  if (scheme == 0) {
+    canvas.SetTextColor(COLOR_WHITE);
+  } else if (scheme == 1) {
+    canvas.SetTextColor(COLOR_BLACK);
+  } else {
+    canvas.SetTextColor(COLOR_YELLOW);
+  }
+  // canvas.SetTextColor(inverted ? COLOR_BLACK : COLOR_WHITE);
   const int offset = canvas.GetFontHeight() / 12u;
   canvas.DrawText(x + offset, y + offset, text);
   canvas.DrawText(x - offset, y + offset, text);
   canvas.DrawText(x + offset, y - offset, text);
   canvas.DrawText(x - offset, y - offset, text);
+  // JW: additional to be even prettier :)
+  canvas.DrawText(x + offset, y         , text);
+  canvas.DrawText(x         , y + offset, text);
+  canvas.DrawText(x - offset, y         , text);
+  canvas.DrawText(x         , y - offset, text);
 
-  canvas.SetTextColor(inverted ? COLOR_WHITE : COLOR_BLACK);
+  if (scheme == 0) {
+    canvas.SetTextColor(COLOR_BLACK);
+  } else if (scheme == 1) {
+    canvas.SetTextColor(COLOR_WHITE);
+  } else {
+    canvas.SetTextColor(COLOR_BLACK);
+  }
+
+//  canvas.SetTextColor(inverted ? COLOR_WHITE : COLOR_BLACK);
   canvas.DrawText(x, y, text);
 }
 
@@ -151,9 +170,11 @@ TextInBox(Canvas &canvas, const TCHAR *text, int x, int y,
     canvas.SetTextColor(COLOR_BLACK);
     canvas.DrawOpaqueText(x, y, rc, text);
   } else if (mode.shape == LabelShape::OUTLINED) {
-    RenderShadowedText(canvas, text, x, y, false);
+    RenderShadowedText(canvas, text, x, y, 0 /*false*/);
+  } else if (mode.shape == LabelShape::OUTLINED_YELLOW) {
+    RenderShadowedText(canvas, text, x, y, 2 /*false*/);
   } else if (mode.shape == LabelShape::OUTLINED_INVERTED) {
-    RenderShadowedText(canvas, text, x, y, true);
+    RenderShadowedText(canvas, text, x, y, 1/*true*/);
   } else {
     canvas.SetBackgroundTransparent();
     canvas.SetTextColor(COLOR_BLACK);

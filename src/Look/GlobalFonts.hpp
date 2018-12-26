@@ -36,7 +36,8 @@ namespace Fonts
   extern Font map;
   extern Font map_bold;
   extern Font map_overlay_value;
-
+  extern Font map_overlay_medium;
+  
   bool Load(const FontSettings &settings);
 
   void Deinitialize();

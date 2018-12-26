@@ -28,8 +28,8 @@ Copyright_License {
 #include "Colors.hpp"
 
 void
-MapLook::Initialise123(const MapSettings &settings,
-                    const Font &font, const Font &bold_font, const Font &overlay_value_font)
+MapLook::Initialise(const MapSettings &settings,
+                    const Font &font, const Font &bold_font, const Font &overlay_value_font, const Font &overlay_medium_font)
 {
   const uint8_t alpha = ALPHA_OVERLAY;
 
@@ -95,5 +95,5 @@ MapLook::Initialise123(const MapSettings &settings,
   topography.Initialise();
   airspace.Initialise(settings.airspace, topography.important_label_font);
 
-  overlay.Initialise(font, bold_font, overlay_value_font);
+  overlay.Initialise(font, bold_font, overlay_value_font, overlay_medium_font);
 }

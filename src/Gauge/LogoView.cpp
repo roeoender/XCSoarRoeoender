@@ -152,5 +152,6 @@ LogoView::draw(Canvas &canvas, const PixelRect &rc)
 
   canvas.SetTextColor(COLOR_BLACK);
   canvas.SetBackgroundTransparent();
+  // Draw product string at the top
   canvas.DrawText(2, 2, XCSoar_ProductToken);
 }

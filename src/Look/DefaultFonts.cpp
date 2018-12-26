@@ -35,8 +35,9 @@ InitialiseLogFonts(FontSettings &settings)
   // Font for map bold text
   settings.map_bold = FontDescription(Layout::FontScale(10), true);
 
-  // Jarek wierkszy font wartosci
-  settings.map_overlay_value = FontDescription(Layout::FontScale(15), true);
+  // JW: Larger fonts used for values on map overlay
+  settings.map_overlay_value = FontDescription(Layout::FontScale(14), true);
+  settings.map_overlay_medium = FontDescription(Layout::FontScale(13), true);
 }
 
 FontSettings

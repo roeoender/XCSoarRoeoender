@@ -31,6 +31,7 @@ Font Fonts::map;
 Font Fonts::map_bold;
 /// JAREK font wyswietlania
 Font Fonts::map_overlay_value;
+Font Fonts::map_overlay_medium;
 
 bool
 Fonts::Load(const FontSettings &settings)
@@ -38,8 +39,9 @@ Fonts::Load(const FontSettings &settings)
   map.Load(settings.map);
   map_bold.Load(settings.map_bold);
   map_overlay_value.Load(settings.map_overlay_value);
+  map_overlay_medium.Load(settings.map_overlay_medium);
 
-  return map.IsDefined() && map_bold.IsDefined() && map_overlay_value.IsDefined();
+  return map.IsDefined() && map_bold.IsDefined() && map_overlay_value.IsDefined() && map_overlay_medium.IsDefined();
 }
 
 void
@@ -48,4 +50,5 @@ Fonts::Deinitialize()
   map.Destroy();
   map_bold.Destroy();
   map_overlay_value.Destroy();
+  map_overlay_medium.Destroy();
 }

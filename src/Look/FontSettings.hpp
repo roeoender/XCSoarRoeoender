@@ -30,6 +30,7 @@ struct FontSettings {
   FontDescription map;
   FontDescription map_bold;
   FontDescription map_overlay_value;
+  FontDescription map_overlay_medium;
 };
 
 #endif

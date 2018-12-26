@@ -26,11 +26,12 @@ Copyright_License {
 #include "Resources.hpp"
 
 void
-OverlayLook::Initialise(const Font &font, const Font &bold_font, const Font &overlay_value_font123)
+OverlayLook::Initialise(const Font &font, const Font &bold_font, const Font &arg_overlay_value_font, const Font &arg_overlay_medium_font)
 {
   map_scale_left_icon.LoadResource(IDB_MAPSCALE_LEFT, IDB_MAPSCALE_LEFT_HD, false);
   map_scale_right_icon.LoadResource(IDB_MAPSCALE_RIGHT, IDB_MAPSCALE_RIGHT_HD, false);
   overlay_font = &bold_font;
-  overlay_value_font = &overlay_value_font123;
-  crosshair_pen.Create(Pen::DASH2, 1, COLOR_DARK_GRAY);
+  overlay_value_font = &arg_overlay_value_font;
+  overlay_medium_font = &arg_overlay_medium_font;
+  crosshair_pen.Create(Pen::DASH2, 3, COLOR_DARK_GRAY);
 }

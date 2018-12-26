@@ -31,6 +31,7 @@ enum class LabelShape : uint8_t {
   FILLED,
   OUTLINED,
   OUTLINED_INVERTED,
+  OUTLINED_YELLOW,
   ROUNDED_WHITE,
   ROUNDED_BLACK,
 };

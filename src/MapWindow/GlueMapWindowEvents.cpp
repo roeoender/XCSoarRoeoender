@@ -409,7 +409,7 @@ GlueMapWindow::OnPaintBuffer(Canvas &canvas)
 
   MapWindow::OnPaintBuffer(canvas);
 
-  // JAREK DrawMapScale(canvas, GetClientRect(), render_projection);
+  // JW: moved DrawMapScale(canvas, GetClientRect(), render_projection);
   if (IsPanning())
     DrawPanInfo(canvas);
 

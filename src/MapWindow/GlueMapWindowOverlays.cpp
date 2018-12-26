@@ -54,6 +54,16 @@
 #include "MainWindow.hpp"
 #include "Units/Units.hpp"
 #include "Formatter/AngleFormatter.hpp"
+#include "Computer/GlideComputer.hpp"
+#include "Airspace/NearestAirspace.hpp"
+#include "Engine/Airspace/AbstractAirspace.hpp"
+
+// Shift of base center coordinate of values overlay
+#define OVR_OFFSET 47
+// wysokosc jednego napisu
+#define OVR_SHIFT 30
+
+extern Airspaces airspace_database;
 
 void
 GlueMapWindow::DrawGesture(Canvas &canvas) const
@@ -189,110 +199,244 @@ GlueMapWindow::DrawValuesOverlay(Canvas &canvas, const PixelRect &rc) const
  const ComputerSettings &settings_computer = GetComputerSettings();
  const TaskBehaviour &task_behaviour = settings_computer.task;
 
- // jarek
+  TextInBoxMode mode;
+  mode.shape = LabelShape::ROUNDED_BLACK;
+  const Font &font = *look.overlay.overlay_value_font;
+  const Font &font2 = *look.overlay.overlay_medium_font;
+  const Font &font3 = *look.overlay.overlay_font;
+
+  canvas.Select(font);
+
   TCHAR valChar[50];
   StaticString<80> buffer;
-  buffer.clear();
 
+  int y_base_center = (rc.bottom + rc.top) / 2 - Layout::FastScale(OVR_OFFSET);
+
+  // ----- altitudes - left center
+    PixelPoint p(rc.left + Layout::FastScale(2),
+                 y_base_center);
+  {
+    buffer.clear();
+
+    auto hAgl = Calculated().altitude_agl;
+    FormatUserAltitude(hAgl, valChar, false);
+    buffer += valChar;
+
+    buffer += _T("|");
+
+    auto hGps = Basic().gps_altitude_available ? (int)Basic().gps_altitude : 0;
+    FormatUserAltitude(hGps, valChar, false);
+    buffer += valChar;
+    bool smaller_font = false;
+    // when the text is long we use smaller font
+    if (buffer.length() > 7) {
+      smaller_font = true;
+      canvas.Select(font3);
+    }
+    TextInBox(canvas, buffer, p.x, p.y, mode, rc, nullptr);
+    if (smaller_font) {
+      canvas.Select(font);
+    }
+  }
+
+  //---------- right center  true airspeed and ground speed
+  {
+    buffer.clear();
+    if (Basic().airspeed_available) {
+      auto ts = Basic().true_airspeed;
+      FormatUserSpeed(ts, valChar, false, false);
+      buffer += valChar;
+    }
+    if (Basic().ground_speed_available) {
+      buffer += _T("|");
+      auto bv = Basic().ground_speed;
+      FormatUserSpeed(bv, valChar, false, false);
+      buffer += valChar;
+    }
+    const PixelSize text_size = canvas.CalcTextSize(buffer);
+
+    p.x = rc.right - text_size.cx;
+    p.y = y_base_center;
+
+    TextInBox(canvas, buffer, p.x, p.y, mode, rc, nullptr);
+  }
+
+  // font outlined yellow used from here
+  mode.shape = LabelShape::OUTLINED_YELLOW;
+  canvas.Select(font2);
+
+  //--------- right lower-center: MacCready setting
+  {
+    buffer.clear();
+
+    const double mc = settings_computer.polar.glide_polar_task.GetMC();
+    FormatUserVerticalSpeed(mc, valChar, false, false);
+    buffer += valChar;
+    buffer += settings_computer.task.auto_mc ? _("A") : _("M");
+    const PixelSize text_size = canvas.CalcTextSize(buffer);
+    p.x = rc.right - text_size.cx;
+    p.y = y_base_center + Layout::FastScale(25);
+    TextInBox(canvas, buffer, p.x, p.y, mode, rc, nullptr);
+  }
+  // prawe centrom-gora: predkosc dolphin/block
+  {
+    buffer.clear();
+    if (settings_computer.features.block_stf_enabled) {
+      FormatUserSpeed(Calculated().common_stats.V_block, valChar, false, false);
+      buffer += valChar;
+      buffer += "|";
+    }
+    FormatUserSpeed(Calculated().common_stats.V_dolphin, valChar, false, false);
+    buffer += valChar;
+
+    const PixelSize text_size = canvas.CalcTextSize(buffer);
+
+    p.x = rc.right - text_size.cx;
+    p.y = y_base_center - Layout::FastScale(OVR_SHIFT);
+    TextInBox(canvas, buffer, p.x, p.y, mode, rc, nullptr);
+
+  }
+  //--------- lewe centrum-dol: nawigacja
   if (terrain != nullptr) {
+    p.x = rc.left + Layout::FastScale(2);
+    p.y = y_base_center + Layout::FastScale(25); // so nonstandard
     auto elevation = terrain->GetTerrainHeight(Basic().location);
     if (!elevation.IsSpecial()) {
       FormatUserAltitude(elevation.GetValue(), valChar, false);
+      buffer.clear();
       buffer += valChar;
-      buffer += _T("|");
+      TextInBox(canvas, buffer, p.x, p.y, mode, rc, nullptr);
     }
   }
-  
-  auto hAgl = Calculated().altitude_agl;
-  FormatUserAltitude(hAgl, valChar, false);
-  buffer += valChar;
+  //--------- left upper-center: vertical airspace
+  {
+    NearestAirspace nearest = NearestAirspace::FindVertical(
+      Basic(),
+      Calculated(),
+      glide_computer->GetAirspaceWarnings(),
+      airspace_database
+//      airspace_renderer.GetAirspaces()
+    );
+    if (!nearest.IsDefined()) {
+      buffer.clear();
+      // buffer += valChar;
+      buffer += _T("---");
+      // just debug: FormatUserSpeed(airspace_renderer.GetAirspaces()->GetSize(), valChar, false, false);
+      // buffer += valChar;
+      p.x = rc.left + Layout::FastScale(2);
+      p.y = y_base_center - Layout::FastScale(OVR_SHIFT);
 
-  buffer += _T("|");
+      TextInBox(canvas, buffer, p.x, p.y, mode, rc, nullptr);
+    } else {
+      buffer.clear();
+      FormatRelativeUserAltitude(nearest.distance, valChar, false);
+      buffer += valChar;
+      p.x = rc.left + Layout::FastScale(2);
+      p.y = y_base_center - Layout::FastScale(OVR_SHIFT);
+      TextInBox(canvas, buffer, p.x, p.y, mode, rc, nullptr);
 
-  auto hGps = Basic().gps_altitude_available ? (int)Basic().gps_altitude : 0;
-  FormatUserAltitude(hGps, valChar, false);
-  buffer += valChar;
-
-  buffer += _T(" *");
-
-  auto bv = Basic().ground_speed;
-  FormatUserSpeed(bv, valChar, false, false);
-  buffer += valChar;
-
-  PixelPoint p(rc.left + Layout::FastScale(40),
-               rc.bottom - Layout::FastScale(40));
-  TextInBoxMode mode;
-  mode.shape = LabelShape::ROUNDED_BLACK;
-
-  const Font &font = *look.overlay.overlay_value_font;
-  canvas.Select(font);
-  TextInBox(canvas, buffer, p.x, p.y, mode, rc, nullptr);
+      buffer.clear();
+      buffer += nearest.airspace->GetName();
+      p.x = rc.left + Layout::FastScale(40);
+      p.y = rc.top + Layout::FastScale(25 + 20);
 
 
-  buffer.clear();
+      canvas.Select(font3);
+      TextInBox(canvas, buffer, p.x, p.y, mode, rc, nullptr);
+      canvas.Select(font2);
+    }
+  }
 
+  // next waypoint
   if (task != nullptr) {
     const WaypointPtr way_point = task->GetActiveWaypoint();
     if (way_point != nullptr) {
-      buffer += _T(" ^");
+      buffer.clear();
+//      buffer += _T(" ^");
       const TCHAR *value = way_point->name.c_str();
-      buffer.append(value,5);
-      buffer += _T(":");
-      // dystans
+      buffer.append(value,7);
+      buffer += _T(" : ");
       const TaskStats &task_stats = Calculated().task_stats;
+      // altitude arrival
+      {
+        const auto &next_solution = task_stats.current_leg.solution_remaining;
+        if (
+          Basic().NavAltitudeAvailable() &&
+          task_stats.task_valid &&
+          next_solution.IsAchievable()) {
+          // if you want Alt difference:
+          // auto altitude_difference = next_solution.SelectAltitudeDifference(computer_settings.task.glide);
+          // FormatRelativeUserAltitude(altitude_difference, valChar, false);
+          auto waypt_arrival_alt = next_solution.GetArrivalAltitude(Basic().nav_altitude);
+          FormatUserAltitude((int)Units::ToUserAltitude(waypt_arrival_alt), valChar, false);
+          buffer += valChar;
+        }
+      }
+
+      p.x = rc.left + Layout::FastScale(40),
+      p.y = rc.top + Layout::FastScale(0);
+      canvas.Select(font2);
+      TextInBox(canvas, buffer, p.x, p.y, mode, rc, nullptr);
+
+      // distance & direction
+      buffer.clear();
       const GeoVector &vector_remaining = task_stats.current_leg.vector_remaining;
       if (task_stats.task_valid && vector_remaining.IsValid()) {
         FormatUserDistanceSmart(vector_remaining.distance, valChar, false);
         buffer += valChar;
         if (Basic().track_available) {
-          buffer += _T(":");
+          buffer += _T(" : ");
           Angle bd = vector_remaining.bearing - Basic().track;
           FormatAngleDelta(valChar,10, bd);
           buffer += valChar;
         }
       }
+
+      p.x = rc.left + Layout::FastScale(40),
+      p.y = rc.top + Layout::FastScale(20);
+      canvas.Select(font2);
+      TextInBox(canvas, buffer, p.x, p.y, mode, rc, nullptr);
     }
   }
+
+  // home waypoint
   auto waypoints = CommonInterface::main_window->GetMap()->waypoints;
   if (waypoints != nullptr && waypoints->GetHome() != nullptr) {
     auto home_waypoint = waypoints->GetHome();
     if (home_waypoint != nullptr) {
-
-
+      buffer.clear();
       const TCHAR *value = home_waypoint->name.c_str();
-      buffer += _T(" @");
-      buffer.append(value,5);
-      // wysokosc dolotu
-      buffer += _T(":");
+//      buffer += _T(" @");
+      buffer.append(value,7);
+      // home arrival altitude
+      buffer += _T(" : ");
       double home_arrival_height = CalculateHomeArrival(home_waypoint, settings_computer.polar, task_behaviour);
       FormatUserAltitude((int)Units::ToUserAltitude(home_arrival_height), valChar, false);
       buffer += valChar;
-      buffer += _T("|");
+      p.x = (rc.left + rc.right) / 2 - Layout::FastScale(40),
+      p.y = rc.bottom - Layout::FastScale(40);
+      canvas.Select(font2);
+      TextInBox(canvas, buffer, p.x, p.y, mode, rc, nullptr);
+
       // dystans i kierunek
+      buffer.clear();
       if (Calculated().common_stats.vector_home.IsValid()) {
         double distance_home = Calculated().common_stats.vector_home.distance;
         FormatUserDistanceSmart(distance_home, valChar, false);
         buffer += valChar;
-        buffer += _T(":");
+        buffer += _T(" : ");
         if (Basic().track_available) {
           Angle angle_home = Calculated().common_stats.vector_home.bearing - Basic().track;
           FormatAngleDelta(valChar,10, angle_home);
           buffer += valChar;
         }
       }
+      p.x = (rc.left + rc.right) / 2 - Layout::FastScale(40),
+      p.y = rc.bottom - Layout::FastScale(20);
+      canvas.Select(font2);
+      TextInBox(canvas, buffer, p.x, p.y, mode, rc, nullptr);
     }
   }
-
-
-  
-
-  p.x = rc.left + Layout::FastScale(40),
-  p.y = rc.top + Layout::FastScale(5);
-  //const Font &font = *look.overlay.map_bold;
-  const Font &font2 = *look.overlay.overlay_font;
-  mode.shape = LabelShape::OUTLINED;
-  canvas.Select(font2);
-  TextInBox(canvas, buffer, p.x, p.y, mode, rc, nullptr);
 
 }
 
