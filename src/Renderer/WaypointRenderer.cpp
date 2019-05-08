@@ -189,6 +189,11 @@ protected:
       CopyTruncateString(buffer, buffer_size, way_point.name.c_str());
       break;
 
+
+    case WaypointRendererSettings::DisplayTextType::FIRST_SEVEN:
+      CopyTruncateString(buffer, buffer_size, way_point.name.c_str(), 7);
+      break;
+
     case WaypointRendererSettings::DisplayTextType::FIRST_FIVE:
       CopyTruncateString(buffer, buffer_size, way_point.name.c_str(), 5);
       break;

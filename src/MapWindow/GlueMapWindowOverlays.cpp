@@ -57,6 +57,7 @@
 #include "Computer/GlideComputer.hpp"
 #include "Airspace/NearestAirspace.hpp"
 #include "Engine/Airspace/AbstractAirspace.hpp"
+#include "Util/TruncateString.hpp"
 
 // Shift of base center coordinate of values overlay
 #define OVR_OFFSET 47
@@ -191,6 +192,7 @@ GlueMapWindow::CalculateHomeArrival(
   return result.pure_glide_altitude_difference;
 }
 
+#define OVR_STR_BUF_SIZE 50
 
 void
 GlueMapWindow::DrawValuesOverlay(Canvas &canvas, const PixelRect &rc) const
@@ -206,8 +208,7 @@ GlueMapWindow::DrawValuesOverlay(Canvas &canvas, const PixelRect &rc) const
   const Font &font3 = *look.overlay.overlay_font;
 
   canvas.Select(font);
-
-  TCHAR valChar[50];
+  TCHAR valChar[OVR_STR_BUF_SIZE];
   StaticString<80> buffer;
 
   int y_base_center = (rc.bottom + rc.top) / 2 - Layout::FastScale(OVR_OFFSET);
@@ -352,9 +353,9 @@ GlueMapWindow::DrawValuesOverlay(Canvas &canvas, const PixelRect &rc) const
     const WaypointPtr way_point = task->GetActiveWaypoint();
     if (way_point != nullptr) {
       buffer.clear();
-//      buffer += _T(" ^");
-      const TCHAR *value = way_point->name.c_str();
-      buffer.append(value,7);
+      // const TCHAR *value = way_point->name.c_str();
+      CopyTruncateString(valChar, OVR_STR_BUF_SIZE, way_point->name.c_str(), 7);
+      buffer += valChar;
       buffer += _T(" : ");
       const TaskStats &task_stats = Calculated().task_stats;
       // altitude arrival
@@ -405,9 +406,8 @@ GlueMapWindow::DrawValuesOverlay(Canvas &canvas, const PixelRect &rc) const
     auto home_waypoint = waypoints->GetHome();
     if (home_waypoint != nullptr) {
       buffer.clear();
-      const TCHAR *value = home_waypoint->name.c_str();
-//      buffer += _T(" @");
-      buffer.append(value,7);
+      CopyTruncateString(valChar, OVR_STR_BUF_SIZE, home_waypoint->name.c_str(), 7);
+      buffer += valChar;
       // home arrival altitude
       buffer += _T(" : ");
       double home_arrival_height = CalculateHomeArrival(home_waypoint, settings_computer.polar, task_behaviour);
