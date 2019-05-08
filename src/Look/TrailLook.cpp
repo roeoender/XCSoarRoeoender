@@ -107,7 +107,7 @@ TrailLook::Initialise(const TrailSettings &settings)
     else
       iwidth = std::max(minwidth,
                         (i - NUMSNAILCOLORS / 2) *
-                        Layout::ScalePenWidth(16u) / NUMSNAILCOLORS);
+                        Layout::ScalePenWidth(10u) / NUMSNAILCOLORS); // JAREK smaller increase (16u was old)
 
     trail_widths[i] = iwidth;
     trail_brushes[i].Create(color);

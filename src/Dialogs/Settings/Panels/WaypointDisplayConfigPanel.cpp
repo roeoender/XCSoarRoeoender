@@ -94,6 +94,9 @@ WaypointDisplayConfigPanel::Prepare(ContainerWindow &parent, const PixelRect &rc
     { (unsigned)WaypointRendererSettings::DisplayTextType::FIRST_FIVE,
       N_("First 5 letters"),
       N_("The first 5 letters of the waypoint name are displayed.") },
+    { (unsigned)WaypointRendererSettings::DisplayTextType::FIRST_SEVEN,
+      N_("First 7 letters"),
+      N_("The first 7 letters of the waypoint name are displayed.") },
     { (unsigned)WaypointRendererSettings::DisplayTextType::NONE,
       N_("None"), N_("No waypoint name is displayed.") },
     { 0 }

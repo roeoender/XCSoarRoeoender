@@ -33,6 +33,7 @@ struct WaypointRendererSettings {
   enum class DisplayTextType : uint8_t {
     NAME = 0,
     OBSOLETE_DONT_USE_NUMBER,
+    FIRST_SEVEN, // JAREK 0.0.3
     FIRST_FIVE,
     NONE,
     FIRST_THREE,
