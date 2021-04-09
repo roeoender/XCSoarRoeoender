@@ -285,7 +285,7 @@ GlueMapWindow::DrawValuesOverlay(Canvas &canvas, const PixelRect &rc) const
     if (settings_computer.features.block_stf_enabled) {
       FormatUserSpeed(Calculated().common_stats.V_block, valChar, false, false);
       buffer += valChar;
-      buffer += "|";
+      buffer += _("|");
     }
     FormatUserSpeed(Calculated().common_stats.V_dolphin, valChar, false, false);
     buffer += valChar;
